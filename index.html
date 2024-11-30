@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title></title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap" rel="stylesheet">
+<style>
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    height: auto;
+    background: linear-gradient(to right, #1a1a2e, #16213e, #0f3460);
+    margin: 0;
+    font-family: 'Cairo', sans-serif;
+    text-align: center;
+  }
+
+  .question {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #ffffff;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
+  }
+
+  .box {
+    width: 90vw;
+    height: 83vw;
+    max-width: 450px;
+    max-height: 280px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px; /* إضافة مسافة بين المربعات */
+  }
+
+  .gif-image {
+    width: 65%;
+    height: 106%;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  .rectangle {
+    width: 85%;
+    max-width: 470px;
+    height: 90px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: calc(50% - 12px);
+    margin: 5px;
+  }
+
+  .buttons-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 20px; /* زيادة المسافة بين الأزرار */
+  }
+
+  .button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    color: #ffffff;
+    font-size: 1em;
+    cursor: pointer;
+    transition: box-shadow 0.3s;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 33%;
+  }
+
+  /* زر التسجيل بدون تأثيرات إضافية */
+  .register-button {
+    background-color: #16213e;
+  }
+
+  /* تأثيرات تدرج لزر "التالي" بالأخضر */
+  .button-next {
+    background: linear-gradient(135deg, #28a745, #218838);
+  }
+
+  /* تأثيرات تدرج لزر "السابق" بالأحمر */
+  .button-previous {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+  }
+
+  /* تأثير الإضاءة فقط لأزرار "التالي" و"السابق" */
+  .button-next:active, .button-previous:active {
+    box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.7);
+  }
+
+  .result-box {
+    width: 340px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    margin: 10px 0;
+    position: relative;
+    border: 1px solid #ccc;
+    height: 30px;
+  }
+
+  .delete-button {
+    background: none;
+    border: none;
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    cursor: pointer;
+    font-size: 1.2em;
+    color: #ff0000;
+  }
+
+  .delete-button-text {
+    font-size: 0.8em;
+    color: #ff0000;
+    margin-top: -5px;
+  }
+
+  /* النافذة المنبثقة */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* زيادة الشفافية */
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  /* محتوى النافذة */
+  .modal-content {
+    background: linear-gradient(145deg, #e0e0e0, #c2c2c2);
+    padding: 5px; /* تقليل الطول أكثر */
+    border-radius: 9px;
+    text-align: center;
+    width: 365px; /* تكبير العرض */
+    position: relative;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3);
+    transform: translateY(-20px); /* رفع النافذة قليلاً */
+  }
+
+  /* عداد الوقت */
+  .timer-circle {
+    width: 250px; /* تكبير الدائرة */
+    height: 250px; /* تكبير الدائرة */
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffffff, #d1d1d1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3em; /* زيادة حجم النص داخل الدائرة */
+    font-weight: bold;
+    color: #333333;
+    margin: 20px auto; /* إنزال الدائرة إلى الأسفل */
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  /* مربعات الوقت */
+  .time-box {
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    margin: 5px;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333333;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    line-height: 60px; /* محاذاة النص عموديًا */
+  }
+
+  /* زر Start باللون الأحمر */
+  .start-button {
+    background-color: #dc3545; /* لون أحمر */
+  }
+
+  .bold-text {
+    font-weight: bold; /* جعل النص عريض */
+    font-size: 1.2em; /* زيادة حجم الخط */
+    color: #000; /* لون النص */
+  }
+</style>
+</head>
+<body>
+<div class="question">   </div>
+<div class="question"> </div>
+
+<div class="container">
+  <div class="box">
+    <img src="https://burnfit.io/wp-content/uploads/2023/11/BB_BSQT.gif" alt="GIF" class="gif-image">
+  </div>
+  <div class="rectangle">
+    <div style="display: flex; justify-content: space-between; width: 100%;">
+      <input type="text" id="weight32" placeholder="أدخـل الـوزن (كغ)" />
+      <input type="text" id="reps32" placeholder="أدخـل العـدات" />
+    </div>
+    <div class="buttons-container">
+      <button class="button button-previous" onclick="previous()">السـابق</button>
+      <button class="button register-button" onclick="register()">تسجيـل</button>
+      <button class="button button-next" onclick="next()">التـالي</button>
+    </div>
+  </div>
+
+  <div id="resultsContainer32"></div>
+</div>
+
+<!-- النافذة المنبثقة -->
+<div class="modal" id="timerModal">
+  <div class="modal-content">
+    <div>
+      <div style="display: flex; justify-content: center;">
+        <div class="time-box" onclick="setTime(30)">30</div>
+        <div class="time-box" onclick="setTime(60)">1:00</div>
+        <div class="time-box" onclick="setTime(90)">1:30</div>
+        <div class="time-box" onclick="setTime(120)">2:00</div>
+        <div class="time-box" onclick="setTime(180)">3:00</div>
+      </div>
+    </div>
+    <div class="timer-circle" id="timerCircle">0</div>
+    <p class="bold-text">خـذ نفسًا عميقًا وارتاح لتكمل المشوار</p>
+    <button class="button start-button" onclick="startTimer()">Start</button>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const savedResults = loadResults();
+    savedResults.forEach(result => addResultToDOM(result.weight, result.reps));
+  });
+
+  let countdown;
+  let timeLeft = 0;
+  let isRunning = false;
+
+  function register() {
+    const weight = document.getElementById('weight32').value;
+    const reps = document.getElementById('reps32').value;
+
+    if (!isFinite(weight) || !isFinite(reps) || weight <= 0 || reps <= 0) {
+      alert("الرجاء إدخال أرقام صحيحة وكبيرة من صفر للوزن والعدات.");
+      return;
+    }
+
+    addResultToDOM(weight, reps);
+    const savedResults = loadResults();
+    savedResults.unshift({ weight, reps });
+    saveResults(savedResults);
+
+    document.getElementById('weight32').value = '';
+    document.getElementById('reps32').value = '';
+
+    // تفعيل التايمر عند الضغط على زر التسجيل
+    document.getElementById('timerModal').style.display = 'flex';
+    setTime(30); // ضبط الوقت
+    toggleTimer(); // بدء التايمر
+  }
+
+  function addResultToDOM(weight, reps) {
+    const resultBox = document.createElement('div');
+    resultBox.className = 'result-box';
+    resultBox.innerHTML = `<span>الــوزن: ${weight} ك ،     الـعـدات: ${reps}</span>`;
+
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'delete-button';
+    deleteButton.innerHTML = '🗑️';
+
+    const deleteText = document.createElement('div');
+    deleteText.className = 'delete-button-text';
+    deleteText.innerHTML = 'حذف';
+
+    deleteButton.appendChild(deleteText);
+    deleteButton.onclick = function() {
+      removeResultFromStorage(weight, reps);
+      resultBox.remove();
+    };
+
+    resultBox.appendChild(deleteButton);
+    document.getElementById('resultsContainer32').insertBefore(resultBox, resultsContainer32.firstChild);
+  }
+
+  function saveResults(results) {
+    localStorage.setItem('results32', JSON.stringify(results));
+  }
+
+  function loadResults() {
+    return JSON.parse(localStorage.getItem('results32')) || [];
+  }
+
+  function removeResultFromStorage(weight, reps) {
+    let savedResults = loadResults();
+    savedResults = savedResults.filter(result => result.weight !== weight || result.reps !== reps);
+    saveResults(savedResults);
+  }
+
+  function previous() {
+    alert("الذهاب للسؤال السابق");
+  }
+
+  function next() {
+    alert("الذهاب للسؤال التالي");
+  }
+
+  function toggleTimer() {
+    if (isRunning) {
+      clearInterval(countdown);
+      isRunning = false;
+    } else {
+      countdown = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timerCircle').textContent = formatTime(timeLeft);
+        if (timeLeft <= 0) {
+          clearInterval(countdown);
+          closeModal(); // إغلاق النافذة تلقائيًا عند انتهاء الوقت
+        }
+      }, 1000);
+      isRunning = true;
+    }
+  }
+
+  function setTime(seconds) {
+    timeLeft = seconds;
+    document.getElementById('timerCircle').textContent = formatTime(timeLeft);
+  }
+
+  function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  }
+
+  function startTimer() {
+    clearInterval(countdown);
+    closeModal();
+  }
+
+  function closeModal() {
+    document.getElementById('timerModal').style.display = 'none';
+    clearInterval(countdown);
+    isRunning = false;
+    document.getElementById('timerCircle').textContent = '0';
+  }
+</script>
+</body>
+</html>
